@@ -1,18 +1,41 @@
-import {Account, Avatars, Client, Databases, ID, Query, Storage} from "react-native-appwrite";
-import {CreateUserParams, GetMenuParams, SignInParams} from "@/type";
+import {Account, AppwriteException, Avatars, Client, Databases, ID, Query, Storage} from "react-native-appwrite";
+import { CreateUserParams, GetMenuParams, SignInParams } from "@/type";
+
+// Mapeo de códigos de error de Appwrite a mensajes en español entendibles para el usuario.
+const AUTH_ERROR_MESSAGES: Record<string, string> = {
+    user_invalid_credentials: "Email o contraseña incorrectos.",
+    user_already_exists: "Ya existe una cuenta con ese email.",
+    user_email_already_exists: "Ya existe una cuenta con ese email.",
+    user_not_found: "No encontramos una cuenta con ese email.",
+    user_blocked: "Esta cuenta fue bloqueada. Contactá a soporte.",
+    user_password_mismatch: "Las contraseñas no coinciden.",
+    password_recently_used: "Esa contraseña ya fue usada antes. Elegí otra.",
+    password_personal_data: "La contraseña no puede contener tu nombre, email u otros datos personales.",
+    general_rate_limit_exceeded: "Demasiados intentos. Esperá unos minutos y volvé a intentar.",
+    general_argument_invalid: "Uno de los datos ingresados no es válido.",
+};
+
+export const getAuthErrorMessage = (e: unknown): string => {
+    if (e instanceof AppwriteException) {
+        return AUTH_ERROR_MESSAGES[e.type] || e.message || "Ocurrió un error inesperado. Probá de nuevo.";
+    }
+    if (e instanceof Error) return e.message;
+    return "Ocurrió un error inesperado. Probá de nuevo.";
+};
 
 export const appwriteConfig = {
-    endpoint: process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT!,
-    projectId: process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID!,
-    platform: "com.jsm.foodordering",
-    databaseId: '68629ae60038a7c61fe4',
-    bucketId: '68643e170015edaa95d7',
-    userCollectionId: '68629b0a003d27acb18f',
-    categoriesCollectionId: '68643a390017b239fa0f',
-    menuCollectionId: '68643ad80027ddb96920',
-    customizationsCollectionId: '68643c0300297e5abc95',
-    menuCustomizationsCollectionId: '68643cd8003580ecdd8f'
-}
+  endpoint: "https://fra.cloud.appwrite.io/v1",
+  projectId: "6a3fdd62000cc7dce9f2",
+  platform: "com.jsm.foodordering",
+  databaseId: "6a3fe0400020065571b2",
+  userCollectionId: "users",
+  menuCollectionId: "menu",
+  categoriesCollectionId: "categories",
+  // --- LOS 3 NUEVOS ---
+  bucketId: "6a400dad0006cbfabbcc",
+  customizationsCollectionId: "customizations",
+  menuCustomizationsCollectionId: "menu_customizations",
+};
 
 export const client = new Client();
 
@@ -42,15 +65,15 @@ export const createUser = async ({ email, password, name }: CreateUserParams) =>
             { email, name, accountId: newAccount.$id, avatar: avatarUrl }
         );
     } catch (e) {
-        throw new Error(e as string);
+        throw new Error(getAuthErrorMessage(e));
     }
 }
 
 export const signIn = async ({ email, password }: SignInParams) => {
     try {
-        const session = await account.createEmailPasswordSession(email, password);
+        await account.createEmailPasswordSession(email, password);
     } catch (e) {
-        throw new Error(e as string);
+        throw new Error(getAuthErrorMessage(e));
     }
 }
 
@@ -69,8 +92,7 @@ export const getCurrentUser = async () => {
 
         return currentUser.documents[0];
     } catch (e) {
-        console.log(e);
-        throw new Error(e as string);
+        throw new Error(getAuthErrorMessage(e));
     }
 }
 

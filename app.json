@@ -1,20 +1,22 @@
 {
   "expo": {
-    "name": "fast_food",
-    "slug": "fast_food",
+    "name": "MADS",
+    "slug": "mads-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "fastfood",
+    "icon": "./assets/images/icon-mads.png",
+    "scheme": "mads",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.jsm.foodordering"
     },
     "android": {
+      "package": "com.jsm.foodordering",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/images/splash-mads.png",
+        "backgroundColor": "#E91E8C"
       },
       "edgeToEdgeEnabled": true
     },
@@ -28,10 +30,10 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
+          "image": "./assets/images/splash-mads.png",
+          "imageWidth": 220,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#E91E8C"
         }
       ],
       [
@@ -41,7 +43,10 @@
           "project": "jsm_reactnative_food-ordering",
           "organization": "jsmpro"
         }
-      ]
+      ],
+      "@sentry/react-native",
+      "expo-font",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true

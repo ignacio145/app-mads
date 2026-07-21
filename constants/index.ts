@@ -31,7 +31,9 @@ import cucumber from "@/assets/images/cucumber.png";
 import emptyState from "@/assets/images/empty-state.png";
 import fries from "@/assets/images/fries.png";
 import loginGraphic from "@/assets/images/login-graphic.png";
-import logo from "@/assets/images/logo.png";
+import logo from "@/assets/images/Logo-2026.png";
+import logoVertical from "@/assets/images/Logo-vertical.png";
+import maddyHero from "@/assets/images/Maddy-Top.png";
 import mozarellaSticks from "@/assets/images/mozarella-sticks.png";
 import mushrooms from "@/assets/images/mushrooms.png";
 import onionRings from "@/assets/images/onion-rings.png";
@@ -41,55 +43,67 @@ import salad from "@/assets/images/salad.png";
 import success from "@/assets/images/success.png";
 import tomatoes from "@/assets/images/tomatoes.png";
 
-export const CATEGORIES = [
+// El Employee Journey real que cubre MADS (mads.land → "Qué proyectos podemos hacer")
+export const offers = [
     {
         id: "1",
-        name: "All",
+        title: "Talent Acquisition",
+        icon: "🎯",
+        color: "#E91E8C",
     },
     {
         id: "2",
-        name: "Burger",
+        title: "Onboarding",
+        icon: "👋",
+        color: "#4C5FD9",
     },
     {
         id: "3",
-        name: "Pizza",
+        title: "Capacitación y Desarrollo",
+        icon: "📚",
+        color: "#14B8A6",
     },
     {
         id: "4",
-        name: "Wrap",
+        title: "Recompensa y Reconocimiento",
+        icon: "🏆",
+        color: "#7C3AED",
     },
     {
         id: "5",
-        name: "Burrito",
+        title: "Gestión de Performance",
+        icon: "📈",
+        color: "#0A0A0F",
+    },
+    {
+        id: "6",
+        title: "Offboarding",
+        icon: "🚪",
+        color: "#E91E8C",
     },
 ];
 
-export const offers = [
-    {
-        id: 1,
-        title: "SUMMER COMBO",
-        image: burgerOne,
-        color: "#D33B0D",
-    },
-    {
-        id: 2,
-        title: "BURGER BASH",
-        image: burgerTwo,
-        color: "#DF5A0C",
-    },
-    {
-        id: 3,
-        title: "PIZZA PARTY",
-        image: pizzaOne,
-        color: "#084137",
-    },
-    {
-        id: 4,
-        title: "BURRITO DELIGHT",
-        image: buritto,
-        color: "#EB920C",
-    },
-];
+// Ícono + degradado por especialidad, para no depender de fotos de stock que puedan
+// no corresponder al contenido (evita el problema de imágenes desalineadas).
+type SpecialtyVisual = { icon: string; colors: [string, string] };
+
+const SPECIALTY_VISUALS: Record<string, SpecialtyVisual> = {
+    "Diagnóstico y Transformación Cultural": { icon: "🌱", colors: ["#14B8A6", "#0EA5A0"] },
+    "Programas de Bienestar Integral": { icon: "🧘", colors: ["#4C5FD9", "#6B7FE8"] },
+    "Transformación Ágil de Equipos": { icon: "⚡", colors: ["#E91E8C", "#F0479E"] },
+    "Comunicación Interna y Employer Branding": { icon: "💬", colors: ["#7C3AED", "#9B5CF6"] },
+    "Team Buildings & Dinámicas Grupales": { icon: "🤝", colors: ["#14B8A6", "#4C5FD9"] },
+    "IA Aplicada a Personas": { icon: "🤖", colors: ["#4C5FD9", "#7C3AED"] },
+    "Diversidad, Equidad e Inclusión": { icon: "🌈", colors: ["#E91E8C", "#7C3AED"] },
+    "Sustentabilidad y RSE": { icon: "♻️", colors: ["#14B8A6", "#0A0A0F"] },
+    "Speakers & Charlas Inspiracionales": { icon: "🎤", colors: ["#7C3AED", "#E91E8C"] },
+    "Producción de Eventos Corporativos": { icon: "🎉", colors: ["#E91E8C", "#4C5FD9"] },
+};
+
+const DEFAULT_SPECIALTY_VISUAL: SpecialtyVisual = { icon: "💼", colors: ["#4C5FD9", "#14B8A6"] };
+
+export const getSpecialtyVisual = (name: string): SpecialtyVisual =>
+    SPECIALTY_VISUALS[name] || DEFAULT_SPECIALTY_VISUAL;
 
 export const sides = [
     {
@@ -171,6 +185,8 @@ export const images = {
     fries,
     loginGraphic,
     logo,
+    logoVertical,
+    maddyHero,
     mozarellaSticks,
     mushrooms,
     onionRings,

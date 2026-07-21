@@ -9,7 +9,8 @@ const CustomInput = ({
     onChangeText,
     label,
     secureTextEntry = false,
-    keyboardType="default"
+    keyboardType="default",
+    error
 }: CustomInputProps) => {
     const [isFocused, setIsFocused] = useState(false);
 
@@ -29,8 +30,12 @@ const CustomInput = ({
                 onBlur={() => setIsFocused(false)}
                 placeholder={placeholder}
                 placeholderTextColor="#888"
-                className={cn('input', isFocused ? 'border-primary' : 'border-gray-300')}
+                className={cn('input', error ? 'border-error' : isFocused ? 'border-primary' : 'border-gray-300')}
             />
+
+            {error && (
+                <Text className="text-error text-xs font-quicksand-medium mt-1 pl-2">{error}</Text>
+            )}
         </View>
     )
 }

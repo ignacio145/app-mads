@@ -7,9 +7,13 @@ import {images} from "@/constants";
 const CustomHeader = ({ title }: CustomHeaderProps) => {
     const router = useRouter();
 
+    const handleBack = () => {
+        if (router.canGoBack()) { router.back(); } else { router.replace('/'); }
+    };
+
     return (
         <View className="custom-header">
-            <TouchableOpacity onPress={() => router.back()}>
+            <TouchableOpacity onPress={handleBack}>
                 <Image
                     source={images.arrowBack}
                     className="size-5"

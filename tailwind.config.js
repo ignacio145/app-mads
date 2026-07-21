@@ -5,11 +5,14 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: "#FE8C00",
+        // Paleta oficial MADS (alineada a mads.land)
+        primary: "#E91E8C", // Rosa MADS
+        secondary: "#14B8A6", // Verde azulado / Teal MADS
+        accent: "#7C3AED", // Violeta de contraste
+
         white: {
           DEFAULT: "#ffffff",
           100: "#fafafa",
-          200: "#FE8C00",
         },
         gray: {
           100: "#878787",
@@ -17,8 +20,9 @@ module.exports = {
         },
         dark: {
           100: "#181C2E",
+          200: "#0A0A0F",
         },
-        error: "#F14141",
+        error: "#E63946",
         success: "#2F9B65",
       },
       fontFamily: {
