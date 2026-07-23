@@ -2,6 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
+/* --- Solo web en pantallas anchas (desktop/tablet): mostrar la app dentro de un
+   marco tipo teléfono, centrada, para que no se vea "estirada" como una página web.
+   En celular real (viewport angosto) NO aplica: la app ocupa toda la pantalla. --- */
+@media (min-width: 768px) {
+    html, body {
+        height: 100%;
+        overflow: hidden;
+        background: radial-gradient(circle at 50% 0%, #2a2140 0%, #0f0f14 70%);
+    }
+
+    /* Contenedor raíz de React Native Web: centra el "teléfono" en la ventana. */
+    #root {
+        align-items: center;
+        justify-content: center;
+        padding: 24px 0;
+        box-sizing: border-box;
+    }
+
+    /* La app en sí: ancho de teléfono, alto acotado, con bordes redondeados,
+       bisel oscuro y sombra para que lea como un dispositivo móvil. */
+    #root > div {
+        width: 390px !important;
+        max-width: 390px !important;
+        flex: none !important;
+        height: 100% !important;
+        max-height: 844px !important;
+        border: 10px solid #0a0a0f;
+        border-radius: 44px;
+        overflow: hidden;
+        box-shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
+        background: #fafafa;
+    }
+}
+
 @layer utilities {
     .flex-center {
         @apply flex items-center justify-center;
