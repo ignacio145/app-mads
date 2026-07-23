@@ -1,5 +1,6 @@
 import {Account, AppwriteException, Avatars, Client, Databases, ID, Query, Storage} from "react-native-appwrite";
 import { CreateUserParams, GetMenuParams, SignInParams } from "@/type";
+import { DEMO_CATEGORIES, DEMO_SPECIALTIES } from "@/constants/demoData";
 
 // Mapeo de códigos de error de Appwrite a mensajes en español entendibles para el usuario.
 const AUTH_ERROR_MESSAGES: Record<string, string> = {
@@ -111,7 +112,12 @@ export const getMenu = async ({ category, query }: GetMenuParams) => {
 
         return menus.documents;
     } catch (e) {
-        throw new Error(e as string);
+        // Fallback para el demo/portfolio: si Appwrite está pausado o sin conexión,
+        // servimos especialidades de ejemplo para que la grilla nunca quede vacía.
+        let items = DEMO_SPECIALTIES;
+        if (category) items = items.filter((i) => i.categories === category);
+        if (query) items = items.filter((i) => i.name.toLowerCase().includes(query.toLowerCase()));
+        return items as any;
     }
 }
 
@@ -124,6 +130,7 @@ export const getCategories = async () => {
 
         return categories.documents;
     } catch (e) {
-        throw new Error(e as string);
+        // Fallback para el demo/portfolio (ver getMenu).
+        return DEMO_CATEGORIES as any;
     }
 }
