@@ -4,14 +4,15 @@ import Animated, {
     useSharedValue,
     useAnimatedStyle,
     withTiming,
-    Easing,
+    runOnJS,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import cn from 'clsx';
 
-// Banner informativo: 3 mensajes que rotan solos, rápido y paginado ("sale una, entra
-// la otra"). Slide con Reanimated en el hilo de UI => anda en New Architecture / Expo Go.
-// Cada card tiene su propio degradado con colores de la marca.
+// Banner informativo: 3 mensajes que rotan solos con un fade ("se desvanece uno, entra
+// el otro"). Se hace por opacidad y NO por ancho: así ocupa el 100% del contenedor sin
+// depender de medir la pantalla — funciona en web (incluso dentro del "marco de teléfono",
+// donde el ancho de ventana no coincide con el del marco) y en celular real por igual.
 const BANNERS: { title: string; body: string; colors: [string, string] }[] = [
     {
         title: 'Vos nos contás tu necesidad.',
@@ -33,62 +34,46 @@ const BANNERS: { title: string; body: string; colors: [string, string] }[] = [
 const AUTO_MS = 3200;
 
 const BannerCarousel = () => {
-    // Medimos el ancho real del contenedor (no el de la ventana). En web, dentro del
-    // "marco de teléfono", useWindowDimensions devuelve el ancho del navegador (~1280)
-    // y las slides quedaban cortadas; onLayout da el ancho disponible de verdad.
-    const [width, setWidth] = useState(0);
-    const tx = useSharedValue(0);
-    const indexRef = useRef(0);
     const [index, setIndex] = useState(0);
+    const indexRef = useRef(0);
+    const opacity = useSharedValue(1);
 
     useEffect(() => {
-        if (!width) return;
         const id = setInterval(() => {
-            const next = (indexRef.current + 1) % BANNERS.length;
-            indexRef.current = next;
-            // Se escribe fuera del updater de setState (no durante el render).
-            tx.value = withTiming(-next * width, {
-                duration: 450,
-                easing: Easing.out(Easing.cubic),
+            // Fade out del actual; al terminar, cambia el mensaje y fade in del nuevo.
+            opacity.value = withTiming(0, { duration: 220 }, (finished) => {
+                if (!finished) return;
+                const next = (indexRef.current + 1) % BANNERS.length;
+                indexRef.current = next;
+                runOnJS(setIndex)(next);
+                opacity.value = withTiming(1, { duration: 340 });
             });
-            setIndex(next);
         }, AUTO_MS);
         return () => clearInterval(id);
-    }, [width, tx]);
+    }, [opacity]);
 
-    const animStyle = useAnimatedStyle(() => ({
-        transform: [{ translateX: tx.value }],
-    }));
+    const animStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));
+
+    const banner = BANNERS[index];
 
     return (
         <View className="mb-2 mt-2">
-            <View style={{ overflow: 'hidden' }} onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
-                {width > 0 && (
-                    <Animated.View
-                        style={[
-                            { flexDirection: 'row', width: width * BANNERS.length },
-                            animStyle,
-                        ]}
+            <View className="px-6">
+                <Animated.View style={animStyle}>
+                    <LinearGradient
+                        colors={banner.colors}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 1 }}
+                        style={{ borderRadius: 24, padding: 24, justifyContent: 'center', minHeight: 132 }}
                     >
-                        {BANNERS.map((b, i) => (
-                            <View key={i} style={{ width }} className="px-6">
-                                <LinearGradient
-                                    colors={b.colors}
-                                    start={{ x: 0, y: 0 }}
-                                    end={{ x: 1, y: 1 }}
-                                    style={{ borderRadius: 24, padding: 24, justifyContent: 'center', minHeight: 132 }}
-                                >
-                                    <Text className="text-white text-lg font-quicksand-bold mb-1">
-                                        {b.title}
-                                    </Text>
-                                    <Text className="text-white/80 text-sm font-quicksand-medium leading-relaxed">
-                                        {b.body}
-                                    </Text>
-                                </LinearGradient>
-                            </View>
-                        ))}
-                    </Animated.View>
-                )}
+                        <Text className="text-white text-lg font-quicksand-bold mb-1">
+                            {banner.title}
+                        </Text>
+                        <Text className="text-white/80 text-sm font-quicksand-medium leading-relaxed">
+                            {banner.body}
+                        </Text>
+                    </LinearGradient>
+                </Animated.View>
             </View>
 
             {/* Puntos indicadores */}
