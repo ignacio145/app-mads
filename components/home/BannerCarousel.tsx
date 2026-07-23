@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { View, Text, useWindowDimensions } from 'react-native';
+import { View, Text } from 'react-native';
 import Animated, {
     useSharedValue,
     useAnimatedStyle,
@@ -33,12 +33,16 @@ const BANNERS: { title: string; body: string; colors: [string, string] }[] = [
 const AUTO_MS = 3200;
 
 const BannerCarousel = () => {
-    const { width } = useWindowDimensions();
+    // Medimos el ancho real del contenedor (no el de la ventana). En web, dentro del
+    // "marco de teléfono", useWindowDimensions devuelve el ancho del navegador (~1280)
+    // y las slides quedaban cortadas; onLayout da el ancho disponible de verdad.
+    const [width, setWidth] = useState(0);
     const tx = useSharedValue(0);
     const indexRef = useRef(0);
     const [index, setIndex] = useState(0);
 
     useEffect(() => {
+        if (!width) return;
         const id = setInterval(() => {
             const next = (indexRef.current + 1) % BANNERS.length;
             indexRef.current = next;
@@ -58,31 +62,33 @@ const BannerCarousel = () => {
 
     return (
         <View className="mb-2 mt-2">
-            <View style={{ overflow: 'hidden' }}>
-                <Animated.View
-                    style={[
-                        { flexDirection: 'row', width: width * BANNERS.length },
-                        animStyle,
-                    ]}
-                >
-                    {BANNERS.map((b, i) => (
-                        <View key={i} style={{ width }} className="px-6">
-                            <LinearGradient
-                                colors={b.colors}
-                                start={{ x: 0, y: 0 }}
-                                end={{ x: 1, y: 1 }}
-                                style={{ borderRadius: 24, padding: 24, justifyContent: 'center', minHeight: 132 }}
-                            >
-                                <Text className="text-white text-lg font-quicksand-bold mb-1">
-                                    {b.title}
-                                </Text>
-                                <Text className="text-white/80 text-sm font-quicksand-medium leading-relaxed">
-                                    {b.body}
-                                </Text>
-                            </LinearGradient>
-                        </View>
-                    ))}
-                </Animated.View>
+            <View style={{ overflow: 'hidden' }} onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
+                {width > 0 && (
+                    <Animated.View
+                        style={[
+                            { flexDirection: 'row', width: width * BANNERS.length },
+                            animStyle,
+                        ]}
+                    >
+                        {BANNERS.map((b, i) => (
+                            <View key={i} style={{ width }} className="px-6">
+                                <LinearGradient
+                                    colors={b.colors}
+                                    start={{ x: 0, y: 0 }}
+                                    end={{ x: 1, y: 1 }}
+                                    style={{ borderRadius: 24, padding: 24, justifyContent: 'center', minHeight: 132 }}
+                                >
+                                    <Text className="text-white text-lg font-quicksand-bold mb-1">
+                                        {b.title}
+                                    </Text>
+                                    <Text className="text-white/80 text-sm font-quicksand-medium leading-relaxed">
+                                        {b.body}
+                                    </Text>
+                                </LinearGradient>
+                            </View>
+                        ))}
+                    </Animated.View>
+                )}
             </View>
 
             {/* Puntos indicadores */}
